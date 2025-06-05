@@ -521,7 +521,7 @@ class NotInstalled:
     def main(self) -> None: ...
 
 
-Commands = Union[
+CommandsType = Union[
     Annotated[ImagesToNerfstudioDataset, tyro.conf.subcommand(name="images")],
     Annotated[VideoToNerfstudioDataset, tyro.conf.subcommand(name="video")],
     Annotated[ProcessPolycam, tyro.conf.subcommand(name="polycam")],
@@ -541,10 +541,11 @@ if projectaria_tools is not None:
     from nerfstudio.scripts.datasets.process_project_aria import ProcessProjectAria
 
     # Note that Union[A, Union[B, C]] == Union[A, B, C].
-    Commands = Union[Commands, Annotated[ProcessProjectAria, tyro.conf.subcommand(name="aria")]]
+    CommandsType = Union[CommandsType, Annotated[ProcessProjectAria, tyro.conf.subcommand(name="aria")]]
 else:
-    Commands = Union[
-        Commands,
+
+    CommandsType = Union[
+        CommandsType,
         Annotated[
             NotInstalled,
             tyro.conf.subcommand(
@@ -553,6 +554,8 @@ else:
             ),
         ],
     ]
+
+Commands = tyro.conf.FlagConversionOff[CommandsType]
 
 
 def entrypoint():
